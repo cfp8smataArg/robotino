@@ -1,0 +1,4 @@
+1 - cargar el firmware en esp32cam
+2 - conectar la PC o móvil a red "robotino" (password: 01620162)
+3 - abrir en el browser: 192.168.4.1
+4 - el robot está listo para interactuar
