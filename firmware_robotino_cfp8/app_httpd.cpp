@@ -20,6 +20,7 @@
 // Define Speed variables
 int speed = 100;
 int noStop = 0;
+int val_steps = 100;
 
 //Setting Motor PWM properties
 const int freq = 2000;
@@ -254,6 +255,12 @@ static esp_err_t cmd_handler(httpd_req_t *req)
     Serial.println("framesize");
     if (s->pixformat == PIXFORMAT_JPEG) res = s->set_framesize(s, (framesize_t)val);
   }
+  else if (!strcmp(variable, "steps"))
+  {
+    if(val <= 100) val_steps = 100;
+    else if ((val > 100) && (val < 200)) val_steps = 200;
+    else  val_steps = 300;
+  }  
   else if (!strcmp(variable, "quality"))
   {
     Serial.println("quality");
@@ -381,7 +388,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                <br>
                 <div id="sliders" class="slider-container">
                   <table>
-                  <tr><td>   </td><td>Velocidad de Motor:</td><td align="left" colspan="2"><input type="range" id="speed" min="0" max="255" value="100" onchange="try{fetch(document.location.origin+'/control?var=speed&val='+this.value);}catch(e){}"></td></tr>
+                  <tr><td></td><td>Velocidad de Motor:</td><td align="left" colspan="2"><input type="range" id="speed" min="0" max="255" value="100" onchange="try{fetch(document.location.origin+'/control?var=speed&val='+this.value);}catch(e){}"></td></tr>
+                  <tr><td></td><td>Pasos:</td><td align="center" colspan="2"><input type="range" id="steps" min="100" max="300" value="100" onchange="try{fetch(document.location.origin+'/control?var=steps&val='+this.value);}catch(e){}"></td></tr>
+                  
                   <!-- <tr><td>Vid Quality:</td><td align="center" colspan="2"><input type="range" id="quality" min="10" max="63" value="10" onchange="try{fetch(document.location.origin+'/control?var=quality&val='+this.value);}catch(e){}"></td></tr> -->
                   <!-- <tr><td>Vid Size:</td><td align="center" colspan="2"><input type="range" id="framesize" min="0" max="6" value="5" onchange="try{fetch(document.location.origin+'/control?var=framesize&val='+this.value);}catch(e){}"></td></tr> -->
                   
@@ -515,7 +524,7 @@ void robot_fwd()
   ledcWrite(5, 0);           //PWM (Channel 3) value = 0          //digitalWrite(RIGHT_M1,LOW);
   ledcWrite(6, 0);           //PWM (Channel 4) value = 0          //digitalWrite(LEFT_M2,LOW);
   ledcWrite(7, 0);           //PWM (Channel 5) value = 0          //digitalWrite(RIGHT_M2,LOW);  
-  move_interval=100;
+  move_interval=val_steps;
   previous_time = millis();  
 }
 
@@ -527,7 +536,7 @@ void robot_back()
   ledcWrite(5, speed);     //digitalWrite(RIGHT_M1,HIGH);
   ledcWrite(6, 0);          //digitalWrite(LEFT_M2,LOW);
   ledcWrite(7, 0);         //digitalWrite(RIGHT_M2,LOW);
-  move_interval=100;
+  move_interval=val_steps;
   previous_time = millis();  
 }
 
@@ -539,7 +548,7 @@ void robot_right()
   ledcWrite(5, 0);      //digitalWrite(RIGHT_M1,LOW);
   ledcWrite(6, speed);   //digitalWrite(LEFT_M2,HIGH);
   ledcWrite(7, 0);      //digitalWrite(RIGHT_M2,LOW);  
-  move_interval=100;
+  move_interval=val_steps;
   previous_time = millis();  
 }
 
@@ -551,6 +560,6 @@ void robot_left()
   ledcWrite(5, speed);     //digitalWrite(RIGHT_M1,HIGH);
   ledcWrite(6, 0);          //digitalWrite(LEFT_M2,LOW);
   ledcWrite(7, speed);         //digitalWrite(RIGHT_M2,HIGH);
-  move_interval=100;
+  move_interval=val_steps;
   previous_time = millis();
 }
